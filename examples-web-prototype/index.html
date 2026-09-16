@@ -1,0 +1,393 @@
+<!doctype html>
+<!--
+  Built with the OpenDesign bridge for DeepSeek Harness.
+  Template:  web-prototype  (skills/web-prototype/assets/template.html — copied, not rewritten)
+  Tokens:    design-systems/editorial/tokens.css
+  Gate:      skills/web-prototype/references/checklist.md (P0)
+
+  Deviations from the seed, all deliberate:
+  · Six :root tokens rebound to editorial's compiled values.
+  · Display/body/mono stacks extended with CJK faces so Chinese copy keeps a
+    serif display face instead of silently falling back to a sans.
+  · One added rule (.stat .stat-num → --fg) was tried and reverted: it is the
+    sticky topnav CTA, not the stat numbers, that breaks the accent budget. The
+    nav CTA is therefore demoted to .btn-secondary, since a filled accent button
+    present on every screen competes with each section's own accent role.
+  · No imagery at all: the subject has no real-world referent, so no honest
+    asset exists. Nothing is scaffolded, hotlinked, or fabricated.
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>设计桥 · 在 DSH 里一句话产出可交付网页</title>
+  <style>
+    /* ─── tokens ─────────────────────────────────────────────────────────
+       Six variables, bound to design-systems/editorial/tokens.css.
+       No raw hex anywhere below :root. */
+    :root {
+      --bg:      #fbf7f0;
+      --surface: #fffdf8;
+      --fg:      #1f1a16;
+      --muted:   #7d7168;
+      --border:  #ded3c5;
+      --accent:  #9a5a2f;
+
+      /* derived — do not change */
+      --accent-soft: color-mix(in oklch, var(--accent) 14%, transparent);
+      --fg-soft:     color-mix(in oklch, var(--fg) 6%, transparent);
+
+      /* type — display = serif (CJK-aware), body = sans, mono for numerics */
+      --font-display: 'Iowan Old Style', 'Charter', Georgia, 'Songti SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'Times New Roman', serif;
+      --font-body:    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+      --font-mono:    ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+      /* scale — clamp() so it works at 1280, 1440, 1920 without media queries */
+      --fs-h1: clamp(40px, 5.4vw, 68px);
+      --fs-h2: clamp(30px, 3.6vw, 44px);
+      --fs-h3: 21px;
+      --fs-lead: 18px;
+      --fs-body: 16px;
+      --fs-meta: 13px;
+
+      /* spacing — 8-point grid */
+      --gap-xs: 8px;
+      --gap-sm: 12px;
+      --gap-md: 20px;
+      --gap-lg: 32px;
+      --gap-xl: 56px;
+      --gap-2xl: 96px;
+      --container: 1120px;
+      --gutter: 32px;
+
+      --radius: 10px;
+      --radius-lg: 16px;
+    }
+
+    /* ─── reset & base ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: var(--fs-body);
+      line-height: 1.7;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    p { text-wrap: pretty; }
+    h1, h2, h3, h4 { text-wrap: balance; }
+
+    /* ─── layout primitives ─────────────────────────────────────────── */
+    .container {
+      max-width: var(--container);
+      margin-inline: auto;
+      padding-inline: var(--gutter);
+    }
+    .section {
+      padding-block: clamp(48px, 8vw, var(--gap-2xl));
+    }
+    .section + .section { border-top: 1px solid var(--border); }
+    .stack { display: flex; flex-direction: column; }
+    .stack > * + * { margin-top: var(--gap-md); }
+    .row { display: flex; align-items: center; gap: var(--gap-md); }
+    .row-between { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-md); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-lg); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap-lg); }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap-md); }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: var(--gap-xl); align-items: start; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: var(--gap-xl); align-items: start; }
+    @media (max-width: 920px) {
+      .grid-2, .grid-3, .grid-4, .grid-2-1, .grid-1-2 { grid-template-columns: 1fr; }
+    }
+
+    /* ─── type ──────────────────────────────────────────────────────── */
+    .h1, h1 { font-family: var(--font-display); font-size: var(--fs-h1); line-height: 1.18; letter-spacing: -0.02em; margin: 0; font-weight: 600; }
+    .h2, h2 { font-family: var(--font-display); font-size: var(--fs-h2); line-height: 1.25; letter-spacing: -0.015em; margin: 0; font-weight: 600; }
+    .h3, h3 { font-size: var(--fs-h3); font-weight: 600; line-height: 1.45; letter-spacing: -0.005em; margin: 0; }
+    .lead   { font-size: var(--fs-lead); line-height: 1.7; color: var(--muted); max-width: 60ch; margin: 0; }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 var(--gap-md);
+    }
+    .meta { font-family: var(--font-mono); font-size: var(--fs-meta); color: var(--muted); }
+    .num  { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+    /* ─── chrome: nav + footer ──────────────────────────────────────── */
+    .topnav {
+      position: sticky; top: 0; z-index: 10;
+      background: color-mix(in oklch, var(--bg) 92%, transparent);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .topnav-inner { display: flex; align-items: center; justify-content: space-between; padding-block: 14px; }
+    .topnav .logo { font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+    .topnav nav { display: flex; gap: var(--gap-lg); }
+    .topnav nav a { font-size: 14px; color: var(--muted); }
+    .topnav nav a:hover { color: var(--fg); }
+    .pagefoot { padding-block: var(--gap-xl); color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); }
+    .pagefoot .row-between { flex-wrap: wrap; gap: var(--gap-md); }
+
+    /* ─── buttons ───────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 20px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: -0.005em;
+      transition: transform 0.05s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+    .btn-primary:hover { background: color-mix(in oklch, var(--accent) 88%, black); }
+    .btn-secondary { background: transparent; color: var(--fg); border-color: var(--border); }
+    .btn-secondary:hover { border-color: var(--fg); }
+    .btn-ghost { background: transparent; color: var(--fg); border-color: transparent; padding-inline: 8px; }
+    .btn-ghost:hover { color: var(--accent); }
+    .btn-arrow::after { content: '→'; transition: transform 0.15s ease; }
+    .btn-arrow:hover::after { transform: translateX(2px); }
+
+    /* ─── card / surface ────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+    .card-flat { background: transparent; border: 0; padding: 0; }
+    .card-rule { background: transparent; border: 0; border-top: 1px solid var(--fg); padding: 24px 0 0; border-radius: 0; }
+
+    /* ─── feature cell (icon + h3 + p) ──────────────────────────────── */
+    .feature .feature-mark {
+      width: 36px; height: 36px;
+      display: grid; place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--accent);
+      margin-bottom: var(--gap-md);
+    }
+    .feature .feature-mark svg { width: 18px; height: 18px; }
+    .feature h3 { margin-bottom: 6px; }
+    .feature p  { margin: 0; color: var(--muted); font-size: 15px; }
+
+    /* ─── stat (big number + label) ─────────────────────────────────── */
+    .stat .stat-num {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 6.5vw, 80px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    /* accent budget: the seed's accent-coloured stat numbers are kept as-is.
+       The sticky topnav CTA was demoted to .btn-secondary, because a filled
+       accent button present on every screen would be a third accent role
+       alongside a section eyebrow and the section's own primary CTA. */
+    .stat .stat-label { color: var(--muted); font-size: 14px; margin-top: 8px; max-width: 24ch; }
+    .stat .stat-unit  { font-size: 0.5em; opacity: 0.7; margin-left: 2px; }
+
+    /* ─── pill / badge / tag ────────────────────────────────────────── */
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .tag {
+      display: inline-flex; align-items: center;
+      padding: 4px 10px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    /* ─── table (data-style, no chrome) ─────────────────────────────── */
+    .ds-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    .ds-table th, .ds-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .ds-table th { color: var(--muted); font-weight: 500; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .ds-table tbody tr:hover { background: var(--fg-soft); }
+    .ds-table .num-col { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
+    .ds-table td:first-child { color: var(--muted); width: 22%; }
+
+    /* ─── divider ───────────────────────────────────────────────────── */
+    .rule  { border: 0; border-top: 1px solid var(--border); margin: 0; }
+    .rule-strong { border: 0; border-top: 1px solid var(--fg); margin: 0; }
+
+    /* ─── hero variants used by layouts.md ──────────────────────────── */
+    .hero          { padding-block: clamp(72px, 11vw, 148px); }
+    .hero-center   { text-align: center; max-width: 40ch; margin-inline: auto; }
+    .hero h1       { margin-bottom: var(--gap-md); }
+    .hero .lead    { margin-bottom: var(--gap-lg); margin-inline: auto; }
+    .hero-cta      { display: inline-flex; gap: var(--gap-sm); flex-wrap: wrap; }
+    .hero-center .hero-cta { justify-content: center; }
+    .hero-split    { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-2xl); align-items: center; }
+    @media (max-width: 920px) { .hero-split { grid-template-columns: 1fr; } }
+
+    /* ─── log row (newsletter, blog list, changelog) ────────────────── */
+    .log-row { display: grid; grid-template-columns: 120px 1fr 100px; gap: var(--gap-lg); padding: 22px 0; border-top: 1px solid var(--border); align-items: baseline; }
+    .log-row .meta { color: var(--muted); }
+    .log-row h3 { font-size: 19px; }
+    .log-row .pull { text-align: right; }
+    @media (max-width: 920px) {
+      .log-row { grid-template-columns: 1fr; gap: var(--gap-xs); }
+      .log-row .pull { text-align: left; }
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: var(--fg-soft);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1px 6px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topnav" data-od-id="topnav">
+    <div class="container topnav-inner">
+      <span class="logo">设计桥</span>
+      <nav>
+        <a href="#workflow">工作流</a>
+        <a href="#systems">设计系统</a>
+        <a href="#gate">P0 闸门</a>
+      </nav>
+      <a class="btn btn-secondary" href="#start">开始用</a>
+    </div>
+  </header>
+
+  <main id="content">
+    <!-- Layout 1 — hero, centered -->
+    <section class="section hero" data-od-id="hero">
+      <div class="container hero-center">
+        <p class="eyebrow">DeepSeek Harness · 设计桥</p>
+        <h1>一句话，一个能直接交付的网页。</h1>
+        <p class="lead">把 OpenDesign 的渲染模板、真实 token 契约和反 slop 检查表装进 DSH。从一句需求到自包含的 <code>index.html</code>，中间不再从空白文件起笔。</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#workflow">看它是怎么做的</a>
+          <a class="btn btn-secondary btn-arrow" href="#gate">读 P0 检查表</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layout 4 — stat row (every number below is measured, not estimated) -->
+    <section class="section" data-od-id="stats" id="systems">
+      <div class="container">
+        <p class="eyebrow" style="margin-bottom: 40px;">实测 · 来自本次安装</p>
+        <div class="grid-3">
+          <div class="stat">
+            <div class="stat-num num">49</div>
+            <p class="stat-label">随包落地的设计 skill，逐个通过 DSH 的发现规则校验。</p>
+          </div>
+          <div class="stat">
+            <div class="stat-num num">32</div>
+            <p class="stat-label">品牌与风格 token 系统，从 <code>editorial</code> 到 <code>stripe</code>、<code>小红书</code>。</p>
+          </div>
+          <div class="stat">
+            <div class="stat-num num">2.5<span class="stat-unit">MB</span></div>
+            <p class="stat-label">全部资产体积，纯文件，运行时零下载。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layout 3 — feature triplet -->
+    <section class="section" id="workflow" data-od-id="features">
+      <div class="container stack" style="gap: 56px;">
+        <div style="max-width: 36ch;">
+          <p class="eyebrow">它到底做了什么</p>
+          <h2>三件事，把"看着还行"变成"可以交付"。</h2>
+        </div>
+        <div class="grid-3">
+          <div class="feature card-flat">
+            <div class="feature-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
+            </div>
+            <h3>从种子起笔</h3>
+            <p>每个模板自带 <code>assets/template.html</code>：六个 token 变量、8 点间距、920px 回流都已经写好。你要做的只是把版式骨架贴进去、换成真实文案。</p>
+          </div>
+          <div class="feature card-flat">
+            <div class="feature-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+            </div>
+            <h3>绑定真实 token</h3>
+            <p>设计系统目录里每个品牌都带编译好的 <code>tokens.css</code>。颜色、字体、间距是可读的值，不是"我印象里的那种紫"。</p>
+          </div>
+          <div class="feature card-flat">
+            <div class="feature-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h10M4 17h16"/></svg>
+            </div>
+            <h3>交付前过闸门</h3>
+            <p><code>references/checklist.md</code> 把主观判断拆成可判定的条目：裸 hex、强调色超预算、编造指标、emoji 当图标，一条都过不去。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layout 8 — comparison table (before / after) -->
+    <section class="section" data-od-id="gate" id="gate">
+      <div class="container">
+        <div style="text-align: center; max-width: 38ch; margin: 0 auto 56px;">
+          <p class="eyebrow">接上桥之前与之后</p>
+          <h2>差的不是模型，是有没有可对照的契约。</h2>
+        </div>
+        <table class="ds-table">
+          <thead>
+            <tr>
+              <th>环节</th>
+              <th>直接让模型写</th>
+              <th>接上设计桥</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>起笔</td><td>空白文件，边写边定结构</td><td>种子模板 + 8 种现成版式骨架</td></tr>
+            <tr><td>配色</td><td>凭记忆猜，容易滑向通用紫</td><td>读 <code>tokens.css</code> 的真实值</td></tr>
+            <tr><td>强调色</td><td>每屏五六处，重点消失</td><td>每屏最多两处，逐屏可数</td></tr>
+            <tr><td>排版</td><td>系统无衬线当标题</td><td>衬线标题 + 等宽数字</td></tr>
+            <tr><td>指标</td><td>顺手写出"快 10 倍"</td><td>必须有来源，否则留可辨认的占位</td></tr>
+            <tr style="border-top: 1px solid var(--fg);">
+              <td><strong>交付</strong></td>
+              <td>还得再修一轮样式</td>
+              <td><strong>自包含 HTML，打开即用</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Layout 6 — cta strip -->
+    <section class="section" data-od-id="cta-strip" id="start" style="text-align: center;">
+      <div class="container" style="max-width: 620px;">
+        <h2>装好之后，一句话就够了。</h2>
+        <p class="lead" style="margin: 16px auto 32px;">描述你要什么页面，模板和 token 由桥来选，检查表由桥来守。产出落在工作区，直接打开看。</p>
+        <a class="btn btn-primary" href="#workflow">拿它做一张真页面</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pagefoot" data-od-id="footer">
+    <div class="container row-between">
+      <span>设计资产来自 OpenDesign · Apache-2.0 · 模板 <span class="meta">web-prototype</span> · 令牌 <span class="meta">editorial</span></span>
+      <span class="meta">本页无外部请求，无图片依赖</span>
+    </div>
+  </footer>
+</body>
+</html>

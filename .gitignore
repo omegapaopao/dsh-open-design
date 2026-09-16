@@ -1,0 +1,27 @@
+# .gitignore — generated and machine-specific artefacts
+
+# 3.7 MB cache of the upstream repository tree; regenerate with
+# `node tools/gh-tree.mjs nexu-io/open-design main tree.json`
+tree.json
+
+# The composed profile dump contains this machine's paths, plugin list and
+# model configuration. Not a secret, but personal — regenerate locally with
+# `dsh --profile web --dump-config` when you need to verify composition.
+profile-dump.yml
+
+# Build output of an earlier revision, kept locally while swapping in a new one
+*.bak/
+
+# Verification screenshots, and the throwaway probe pages built from the real
+# page to dodge the headless-capture-from-document-top limitation
+_shots/
+_slice*.html
+_zoom.html
+_probe*.html
+*.out.log
+*.err.log
+
+# Policy: third-party imagery and trademarks are not redistributed here. Any
+# example that needs real photographs keeps its fetch manifest (assets.json) in
+# the repository and pulls the binaries locally with tools/od-fetch-assets.mjs.
+# The bundled example is image-free and needs none of this.

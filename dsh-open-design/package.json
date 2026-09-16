@@ -1,0 +1,36 @@
+{
+  "name": "dsh-open-design",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DeepSeek Harness skill bundle bringing OpenDesign design templates and DESIGN.md design systems into dsh.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "skills",
+    "README.md",
+    "PROVENANCE.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "agent-skill",
+    "open-design",
+    "design-system"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

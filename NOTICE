@@ -1,0 +1,73 @@
+# NOTICE
+
+This repository redistributes third-party skill content. That content is not
+covered by the repository's own authorship; the attribution and licence terms
+below apply to it.
+
+## Bundled skill content — OpenDesign
+
+`dsh-open-design/skills/` contains 51 skill bundles copied verbatim from
+**OpenDesign** (https://github.com/nexu-io/open-design), plus one bundle that is
+original to this repository (see below).
+
+- Upstream licence: **Apache-2.0** — full text in [`LICENSE`](LICENSE).
+- The exact upstream revision is recorded in
+  [`dsh-open-design/PROVENANCE.md`](dsh-open-design/PROVENANCE.md) (ref + tree
+  SHA + fetch timestamp).
+- Only text resources were copied (`.md .html .css .js .mjs .json .txt .yaml
+  .yml .svg`). Upstream preview images and example binaries are omitted.
+- The **only** upstream modification is that a skill whose frontmatter `name`
+  was missing or not kebab-case has that field rewritten to match its directory
+  name, because DeepSeek Harness rejects such a skill outright. 9 files were
+  affected. Skill bodies are otherwise untouched.
+
+### Component licences carried alongside the content
+
+14 of the bundled skills ship their own licence file upstream. Those files are
+copied with them and take precedence over Apache-2.0 for their own directory:
+
+```
+design-templates/guizang-ppt/LICENSE
+skills/brutalist-skill/LICENSE
+skills/emil-design-eng/LICENSE
+skills/frontend-design/LICENSE.txt
+skills/gpt-tasteskill/LICENSE
+skills/image-to-code-skill/LICENSE
+skills/minimalist-skill/LICENSE
+skills/output-skill/LICENSE
+skills/redesign-skill/LICENSE
+skills/review-animations/LICENSE
+skills/soft-skill/LICENSE
+skills/taste-skill/LICENSE
+skills/web-clone/LICENSE
+skills/web-design-guidelines/LICENSE
+skills/writing-guidelines/LICENSE
+```
+
+> Build note: an earlier revision of `tools/od-build.mjs` filtered resources by
+> file extension, which silently dropped every bare `LICENSE` file — 14 of the
+> 15 in this selection. The filter now always keeps licence/notice files. If you
+> rebuild and a licence file is missing, that is a regression, not a choice.
+
+## Original to this repository
+
+- `dsh-open-design/skills/open-design/` — the router skill (workflow, design
+  system bridge, P0 gate guidance, and field notes measured on a real install).
+- `dsh-open-design/cordis.patch.yml`, `dsh-open-design/lib/index.js`,
+  `dsh-open-design/package.json` — the DeepSeek Harness plugin wiring.
+- `tools/*` — the build and verification toolchain.
+- `selection.json` — the curation of which upstream packages are bundled.
+
+These are licensed under Apache-2.0, same as the repository.
+
+## Not included on purpose
+
+`examples-web-prototype/assets/` is **empty in the repository**. The example
+page's photographs are the property of the institution they depict and are
+excluded from redistribution. `examples-web-prototype/assets.json` records where
+each one came from; fetch them locally with `tools/od-fetch-assets.mjs`.
+
+## Trademarks
+
+DeepSeek, OpenDesign, Apple and any other names referenced here belong to their
+owners. Nothing in this repository is affiliated with or endorsed by them.

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>diagnostic</title>
+<style>
+  body { margin: 0; font-family: system-ui, sans-serif; }
+  section { height: 700px; padding: 20px; border-top: 2px solid #333; font-size: 40px; }
+  @keyframes od-reveal { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      [data-reveal] {
+        animation-name: od-reveal;
+        animation-duration: auto;
+        animation-fill-mode: both;
+        animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+        animation-timeline: view();
+        animation-range: entry 4% entry 52%;
+      }
+    }
+  }
+  #diag {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 99;
+    background: #000; color: #0f0; font: 15px/1.6 monospace;
+    padding: 12px; white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+<div id="diag">pending</div>
+<section id="s1" data-reveal data-od-id="s1">s1</section>
+<section id="s2" data-reveal data-od-id="s2">s2</section>
+<section id="s3" data-reveal data-od-id="s3">s3</section>
+<script>
+  function report(tag) {
+    var lines = ['[' + tag + ']'];
+    lines.push('CSS.supports(animation-timeline: view()) = ' +
+      (window.CSS && CSS.supports ? CSS.supports('animation-timeline: view()') : 'n/a'));
+    lines.push('prefers-reduced-motion: reduce = ' +
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    lines.push('scrollY = ' + Math.round(window.scrollY));
+    ['s1', 's2', 's3'].forEach(function (id) {
+      var cs = getComputedStyle(document.getElementById(id));
+      lines.push(id + ': opacity=' + cs.opacity +
+        ' transform=' + cs.transform +
+        ' timeline=' + cs.animationTimeline +
+        ' name=' + cs.animationName);
+    });
+    document.getElementById('diag').textContent = lines.join('\n');
+  }
+  window.addEventListener('load', function () {
+    report('at load');
+    location.hash = '#s2';
+    setTimeout(function () { report('after hash scroll'); }, 1500);
+  });
+</script>
+</body>
+</html>
